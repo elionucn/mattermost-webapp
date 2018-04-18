@@ -469,6 +469,24 @@ class UserSettingsGeneralTab extends React.Component {
                 );
 
                 submit = this.submitEmail;
+            } else if (this.props.user.auth_service === Constants.ELION_SERVICE) {
+                inputs.push(
+                    <div
+                        key='oauthEmailInfo'
+                        className='form-group'
+                    >
+                        <div className='setting-list__hint col-sm-12'>
+                            <FormattedMessage
+                                id='user.settings.general.emailElionCantUpdate'
+                                defaultMessage='Login occurs through Elión. Email cannot be updated. Email address used for notifications is {email}.'
+                                values={{
+                                    email: this.state.originalEmail,
+                                }}
+                            />
+                        </div>
+                        {helpText}
+                    </div>
+                );
             } else if (this.props.user.auth_service === Constants.GITLAB_SERVICE) {
                 inputs.push(
                     <div
@@ -602,6 +620,16 @@ class UserSettingsGeneralTab extends React.Component {
                 } else {
                     describe = UserStore.getCurrentUser().email;
                 }
+            } else if (this.props.user.auth_service === Constants.ELION_SERVICE) {
+                describe = (
+                    <FormattedMessage
+                        id='user.settings.general.loginElion'
+                        defaultMessage='Login done through Elión ({email})'
+                        values={{
+                            email: this.state.originalEmail,
+                        }}
+                    />
+                );
             } else if (this.props.user.auth_service === Constants.GITLAB_SERVICE) {
                 describe = (
                     <FormattedMessage

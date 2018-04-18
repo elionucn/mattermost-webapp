@@ -61,6 +61,9 @@ export default class SecurityTab extends React.Component {
         // Whether or not sign-up with GitLab is enabled.
         enableSignUpWithGitLab: PropTypes.bool,
 
+        // Whether or not sign-up with Elión is enabled.
+        enableSignUpWithElion: PropTypes.bool,
+
         // Whether or not sign-up with Google is enabled.
         enableSignUpWithGoogle: PropTypes.bool,
 
@@ -578,6 +581,13 @@ export default class SecurityTab extends React.Component {
                     defaultMessage='Login done through GitLab'
                 />
             );
+        } else if (this.props.user.auth_service === Constants.ELION_SERVICE) {
+            describe = (
+                <FormattedMessage
+                    id='user.settings.security.loginElion'
+                    defaultMessage='Login done through Elión'
+                />
+            );
         } else if (this.props.user.auth_service === Constants.LDAP_SERVICE) {
             describe = (
                 <FormattedMessage
@@ -630,6 +640,7 @@ export default class SecurityTab extends React.Component {
             let emailOption;
             let gitlabOption;
             let googleOption;
+            let elionOption;
             let office365Option;
             let ldapOption;
             let samlOption;
@@ -645,6 +656,23 @@ export default class SecurityTab extends React.Component {
                                 <FormattedMessage
                                     id='user.settings.security.switchGitlab'
                                     defaultMessage='Switch to using GitLab SSO'
+                                />
+                            </Link>
+                            <br/>
+                        </div>
+                    );
+                }
+
+                if (this.props.enableSignUpWithElion) {
+                    elionOption = (
+                        <div className='padding-bottom x2'>
+                            <Link
+                                className='btn btn-primary'
+                                to={'/claim/email_to_oauth?email=' + encodeURIComponent(user.email) + '&old_type=' + user.auth_service + '&new_type=' + Constants.ELION_SERVICE}
+                            >
+                                <FormattedMessage
+                                    id='user.settings.security.switchElion'
+                                    defaultMessage='Switch to using Elión SSO'
                                 />
                             </Link>
                             <br/>
@@ -748,6 +776,7 @@ export default class SecurityTab extends React.Component {
                 <div key='userSignInOption'>
                     {emailOption}
                     {gitlabOption}
+                    {elionOption}
                     {googleOption}
                     {office365Option}
                     {ldapOption}
@@ -786,6 +815,13 @@ export default class SecurityTab extends React.Component {
                 <FormattedMessage
                     id='user.settings.security.gitlab'
                     defaultMessage='GitLab'
+                />
+            );
+        } else if (this.props.user.auth_service === Constants.ELION_SERVICE) {
+            describe = (
+                <FormattedMessage
+                    id='user.settings.security.elion'
+                    defaultMessage='Elión'
                 />
             );
         } else if (this.props.user.auth_service === Constants.GOOGLE_SERVICE) {
@@ -966,6 +1002,7 @@ export default class SecurityTab extends React.Component {
 
         let numMethods = 0;
         numMethods = this.props.enableSignUpWithGitLab ? numMethods + 1 : numMethods;
+        numMethods = this.props.enableSignUpWithElion ? numMethods + 1 : numMethods;
         numMethods = this.props.enableSignUpWithGoogle ? numMethods + 1 : numMethods;
         numMethods = this.props.enableSignUpWithOffice365 ? numMethods + 1 : numMethods;
         numMethods = this.props.enableLdap ? numMethods + 1 : numMethods;

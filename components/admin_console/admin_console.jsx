@@ -251,6 +251,11 @@ export default class AdminConsole extends React.Component {
                                         extraProps={extraProps}
                                     />
                                     <SCRoute
+                                        path={`${props.match.url}/elion`}
+                                        component={OAuthSettings}
+                                        extraProps={extraProps}
+                                    />
+                                    <SCRoute
                                         path={`${props.match.url}/oauth`}
                                         component={OAuthSettings}
                                         extraProps={extraProps}

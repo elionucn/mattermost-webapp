@@ -22,10 +22,12 @@ export default class OAuthSettings extends AdminSettings {
         this.renderOffice365 = this.renderOffice365.bind(this);
         this.renderGoogle = this.renderGoogle.bind(this);
         this.renderGitLab = this.renderGitLab.bind(this);
+        this.renderElion = this.renderElion.bind(this);
         this.changeType = this.changeType.bind(this);
     }
 
     getConfigFromState(config) {
+        config.ElionSettings.Enable = false;
         config.GitLabSettings.Enable = false;
         config.GoogleSettings.Enable = false;
         config.Office365Settings.Enable = false;
@@ -37,6 +39,16 @@ export default class OAuthSettings extends AdminSettings {
             config.GitLabSettings.UserApiEndpoint = this.state.userApiEndpoint;
             config.GitLabSettings.AuthEndpoint = this.state.authEndpoint;
             config.GitLabSettings.TokenEndpoint = this.state.tokenEndpoint;
+        }
+
+        if (this.state.oauthType === Constants.ELION_SERVICE) {
+            config.ElionSettings.Enable = true;
+            config.ElionSettings.Id = this.state.id;
+            config.ElionSettings.Secret = this.state.secret;
+            config.ElionSettings.UserApiEndpoint = 'https://id.elion.education/api/user/v1/accounts';
+            config.ElionSettings.AuthEndpoint = 'https://id.elion.education/oauth2/authorize';
+            config.ElionSettings.TokenEndpoint = 'https://id.elion.education/oauth2/access_token';
+            config.ElionSettings.Scope = 'profile email';
         }
 
         if (this.state.oauthType === Constants.GOOGLE_SERVICE) {
@@ -67,7 +79,10 @@ export default class OAuthSettings extends AdminSettings {
 
         let oauthType = 'off';
         let settings = {};
-        if (config.GitLabSettings.Enable) {
+        if (config.ElionSettings.Enable) {
+            oauthType = Constants.ELION_SERVICE;
+            settings = config.ElionSettings;
+        } else if (config.GitLabSettings.Enable) {
             oauthType = Constants.GITLAB_SERVICE;
             settings = config.GitLabSettings;
         } else if (config.GoogleSettings.Enable) {
@@ -95,6 +110,8 @@ export default class OAuthSettings extends AdminSettings {
         if (value === Constants.GITLAB_SERVICE) {
             settings = this.config.GitLabSettings;
             gitLabUrl = settings.UserApiEndpoint.replace('/api/v4/user', '');
+        } else if (value === Constants.ELION_SERVICE) {
+            settings = this.config.ElionSettings;
         } else if (value === Constants.GOOGLE_SERVICE) {
             settings = this.config.GoogleSettings;
         } else if (value === Constants.OFFICE365_SERVICE) {
@@ -410,10 +427,97 @@ export default class OAuthSettings extends AdminSettings {
         );
     }
 
+    renderElion() {
+        return (
+            <div>
+                <TextSetting
+                    id='id'
+                    label={
+                        <FormattedMessage
+                            id='admin.elion.clientIdTitle'
+                            defaultMessage='Application ID:'
+                        />
+                    }
+                    placeholder={Utils.localizeMessage('admin.elion.clientIdExample', 'E.g.: "jcuS8PuvcpGhpgHhlcpT1Mx42pnqMxQY"')}
+                    helpText={
+                        <FormattedMessage
+                            id='admin.elion.clientIdDescription'
+                            defaultMessage='Application ID'
+                        />
+                    }
+                    value={this.state.id}
+                    onChange={this.handleChange}
+                />
+                <TextSetting
+                    id='secret'
+                    label={
+                        <FormattedMessage
+                            id='admin.elion.clientSecretTitle'
+                            defaultMessage='Application Secret Key:'
+                        />
+                    }
+                    placeholder={Utils.localizeMessage('admin.elion.clientSecretExample', 'E.g.: "jcuS8PuvcpGhpgHhlcpT1Mx42pnqMxQY"')}
+                    helpText={
+                        <FormattedMessage
+                            id='admin.elion.clientSecretDescription'
+                            defaultMessage='Application secret key'
+                        />
+                    }
+                    value={this.state.secret}
+                    onChange={this.handleChange}
+                />
+                <TextSetting
+                    id='userApiEndpoint'
+                    label={
+                        <FormattedMessage
+                            id='admin.elion.userTitle'
+                            defaultMessage='User API Endpoint:'
+                        />
+                    }
+                    placeholder={''}
+                    value={this.state.userApiEndpoint}
+                    disabled={true}
+                />
+                <TextSetting
+                    id='authEndpoint'
+                    label={
+                        <FormattedMessage
+                            id='admin.elion.authTitle'
+                            defaultMessage='Authorization Endpoint:'
+                        />
+                    }
+                    placeholder={''}
+                    value={this.state.authEndpoint}
+                    disabled={true}
+                />
+                <TextSetting
+                    id='tokenEndpoint'
+                    label={
+                        <FormattedMessage
+                            id='admin.elion.tokenTitle'
+                            defaultMessage='Token Endpoint:'
+                        />
+                    }
+                    placeholder={''}
+                    value={this.state.tokenEndpoint}
+                    disabled={true}
+                />
+            </div>
+        );
+    }
+
     renderSettings() {
         let contents;
         let helpText;
-        if (this.state.oauthType === Constants.GITLAB_SERVICE) {
+        if (this.state.oauthType === Constants.ELION_SERVICE) {
+            contents = this.renderElion();
+            helpText = (
+                <FormattedHTMLMessage
+                    id='admin.elion.EnableHtmlDesc'
+                    defaultMessage=''
+                />
+            );
+        } else if (this.state.oauthType === Constants.GITLAB_SERVICE) {
             contents = this.renderGitLab();
             helpText = (
                 <FormattedHTMLMessage
@@ -442,6 +546,7 @@ export default class OAuthSettings extends AdminSettings {
         const oauthTypes = [];
         oauthTypes.push({value: 'off', text: Utils.localizeMessage('admin.oauth.off', 'Do not allow sign-in via an OAuth 2.0 provider.')});
         oauthTypes.push({value: Constants.GITLAB_SERVICE, text: Utils.localizeMessage('admin.oauth.gitlab', 'GitLab')});
+        oauthTypes.push({value: Constants.ELION_SERVICE, text: Utils.localizeMessage('admin.oauth.elion', 'Elión')});
         if (this.props.license.IsLicensed === 'true') {
             if (this.props.license.GoogleOAuth === 'true') {
                 oauthTypes.push({value: Constants.GOOGLE_SERVICE, text: Utils.localizeMessage('admin.oauth.google', 'Google Apps')});
