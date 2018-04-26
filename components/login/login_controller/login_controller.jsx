@@ -46,6 +46,7 @@ export default class LoginController extends React.Component {
             enableSignInWithUsername: PropTypes.bool.isRequired,
             enableSignUpWithEmail: PropTypes.bool.isRequired,
             enableSignUpWithGitLab: PropTypes.bool.isRequired,
+            enableSignUpWithElion: PropTypes.bool.isRequired,
             enableSignUpWithGoogle: PropTypes.bool.isRequired,
             enableSignUpWithOffice365: PropTypes.bool.isRequired,
             experimentalPrimaryTeam: PropTypes.string,
@@ -380,6 +381,7 @@ export default class LoginController extends React.Component {
 
         const ldapEnabled = this.state.ldapEnabled;
         const gitlabSigninEnabled = this.props.enableSignUpWithGitLab;
+        const elionSigninEnabled = this.props.enableSignUpWithElion;
         const googleSigninEnabled = this.props.enableSignUpWithGoogle;
         const office365SigninEnabled = this.props.enableSignUpWithOffice365;
         const samlSigninEnabled = this.state.samlEnabled;
@@ -503,7 +505,7 @@ export default class LoginController extends React.Component {
             );
         }
 
-        if ((emailSigninEnabled || usernameSigninEnabled || ldapEnabled) && (gitlabSigninEnabled || googleSigninEnabled || samlSigninEnabled || office365SigninEnabled)) {
+        if ((emailSigninEnabled || usernameSigninEnabled || ldapEnabled) && (gitlabSigninEnabled || elionSigninEnabled || googleSigninEnabled || samlSigninEnabled || office365SigninEnabled)) {
             loginControls.push(
                 <div
                     key='divider'
@@ -539,6 +541,26 @@ export default class LoginController extends React.Component {
                             <FormattedMessage
                                 id='login.gitlab'
                                 defaultMessage='GitLab'
+                            />
+                        </span>
+                    </span>
+                </a>
+            );
+        }
+
+        if (elionSigninEnabled) {
+            loginControls.push(
+                <a
+                    className='btn btn-custom-login gitlab'
+                    key='elion'
+                    href={Client4.getOAuthRoute() + '/elion/login' + this.props.location.search}
+                >
+                    <span>
+                        <span className='icon'/>
+                        <span>
+                            <FormattedMessage
+                                id='login.elion'
+                                defaultMessage='Elion'
                             />
                         </span>
                     </span>
